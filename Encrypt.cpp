@@ -126,7 +126,8 @@ Encrypt::Encrypt(){
 	reflector[23] = 2;
 	reflector[24] = 6;
 	reflector[25] = 8;
-
+	
+	//Assign default rotor settings
 	setting1 = 0;
 	setting2 = 0;
 	setting3 = 0;
@@ -137,20 +138,20 @@ Encrypt::Encrypt(){
 //These functions set the current settings of the rotors
 void Encrypt::setSetting1(char c){
 	int i;
-	i = c - 'A';
-	setting1 = i;
+	i = c - 'A';	//Convert from ASCII
+	setting1 = i;	//Assign settings
 }
 
 void Encrypt::setSetting2(char c){
 	int i;
-	i = c - 'A';
-	setting2 = i;
+	i = c - 'A'; 	//Convert from ASCII
+	setting2 = i;	//Assign settings
 }
 
 void Encrypt::setSetting3(char c){
 	int i;
-	i = c - 'A';
-	setting3 = i;
+	i = c - 'A'; 	//Convert from ASCII
+	setting3 = i;	//Assign settings
 }
 
 
@@ -180,8 +181,8 @@ int Encrypt::setPlugboard(char ch1, char ch2){
 	int n = 0;
 	int index1, index2;
 	
-	asmToLower(&ch1);
-	asmToLower(&ch1);
+	asmToLower(&ch1);	//change case of character
+	asmToLower(&ch1);	//change case of character
 	
 	index1 = ch1 - 'a';	//assign corresponding index
 	index2 = ch2 - 'a';
@@ -207,12 +208,12 @@ void Encrypt::unsetPlugboard(char ch1, char ch2){
 	
 	asmToLower(&ch1);
 	asmToLower(&ch2);
-	
-	index = ch1 - 'a';
-	plugboard[index] = index;
+		
+	index = ch1 - 'a';		//Convert ASCII to index
+	plugboard[index] = index;	//reassign default index value
 
-	index = ch2 - 'a';
-	plugboard[index] = index;
+	index = ch2 - 'a';		//Convert ASCII to index
+	plugboard[index] = index;	//reassign default index value
 
 }
 
