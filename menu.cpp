@@ -55,10 +55,12 @@ Menu::Menu()
 	wordImage.setX(2);
 	wordImage.setY(SCREENHEIGHT/2 + 13);
 
+	// the word we have encrypted
 	encryptWordImage.setImage("", red, midLeft);
 	encryptWordImage.setX(2);
 	encryptWordImage.setY(SCREENHEIGHT/2 + 19	 );
 
+	// the rotors
 	leftRImage.setImage(encryption.getSetting3(), white, center);
 	leftRImage.setX(129);
 	leftRImage.setY(8);
@@ -69,6 +71,7 @@ Menu::Menu()
 	rightRImage.setX(149);
 	rightRImage.setY(8);
 
+	// the rotor selected
 	ifstream selectedRotor("SelectRotor.txt");
 	selectRotor.setX(129);
 	selectRotor.setY(8);
@@ -76,10 +79,10 @@ Menu::Menu()
 
 	currSelectRotor = 0;
 
-	firstPlugChar = secondPlugChar = "";
+	firstPlugChar = secondPlugChar = plugString = "";
 	plugChars.setX(130);
 	plugChars.setY(19);
-	plugChars.setImage("", white);
+	plugChars.setImage(plugString, white);
 }
 
 void Menu::backspace()
@@ -104,27 +107,27 @@ void Menu::backspace()
 				encryption.unsetPlugboard(firstPlugChar[firstPlugChar.length()-1], secondPlugChar[secondPlugChar.length()-1]);
 				firstPlugChar.resize(firstPlugChar.length()-1);
 				secondPlugChar.resize(secondPlugChar.length()-1);
-				string temp = "";
+				plugString = "";
 				for(int i=0; i<secondPlugChar.length(); i++) {
-					temp += firstPlugChar[i];
-					temp += " - ";
-					temp += secondPlugChar[i];
-					temp += "\n";
+					plugString += firstPlugChar[i];
+					plugString += " - ";
+					plugString += secondPlugChar[i];
+					plugString += "\n";
 				}
-				plugChars.setImage(temp, white);
+				plugChars.setImage(plugString, white);
 				plugChars.draw();
 			}
 		} else {
 			plugChars.unDraw();
 			firstPlugChar.resize(firstPlugChar.length()-1);
-			string temp = "";
+			plugString = "";
 			for(int i=0; i<secondPlugChar.length(); i++) {
-				temp += firstPlugChar[i];
-				temp += " - ";
-				temp += secondPlugChar[i];
-				temp += "\n";
+				plugString += firstPlugChar[i];
+				plugString += " - ";
+				plugString += secondPlugChar[i];
+				plugString += "\n";
 			}
-			plugChars.setImage(temp, white);
+			plugChars.setImage(plugString, white);
 			plugChars.draw();
 		}
 	}
@@ -144,7 +147,7 @@ void Menu::tab() {
 		ifstream selectFile("PlugSelect.txt");
 		selected.setImage(selectFile, green, center);
 		selected.setX(134);
-		selected.setY(24);
+		selected.setY(31);
 		selected.draw();
 	}
 	else if(myState == Enigma_char_plug_back) {
@@ -155,23 +158,23 @@ void Menu::tab() {
 
 		selected.unDraw();
 		second_selected.unDraw();
-		if(firstPlugChar.length() == secondPlugChar.length()) {
+		if(firstPlugChar.length() != secondPlugChar.length()) {
 			plugChars.unDraw();
 			firstPlugChar.resize(firstPlugChar.length()-1);
-			string temp = "";
+			plugString = "";
 			for(int i=0; i<secondPlugChar.length(); i++) {
-				temp += firstPlugChar[i];
-				temp += " - ";
-				temp += secondPlugChar[i];
-				temp += "\n";
+				plugString += firstPlugChar[i];
+				plugString += " - ";
+				plugString += secondPlugChar[i];
+				plugString += "\n";
 			}
-			plugChars.setImage(temp, white);
+			plugChars.setImage(plugString, white);
 			plugChars.draw();
 		}
 
 		ifstream selectFile("KeySelect.txt");
         selected.setX(15);
-        selected.setY(6);
+        selected.setY(13);
         selected.setImage(selectFile, yellow, center);
 
 	}
@@ -198,6 +201,19 @@ void Menu::tab() {
 
 		selected.unDraw();
 		second_selected.unDraw();
+		if(firstPlugChar.length() != secondPlugChar.length()) {
+			plugChars.unDraw();
+			firstPlugChar.resize(firstPlugChar.length()-1);
+			plugString = "";
+			for(int i=0; i<secondPlugChar.length(); i++) {
+				plugString += firstPlugChar[i];
+				plugString += " - ";
+				plugString += secondPlugChar[i];
+				plugString += "\n";
+			}
+			plugChars.setImage(plugString, white);
+			plugChars.draw();
+		}
 
 		ifstream selectFile("KeySelect.txt");
         selected.setX(15);
@@ -227,7 +243,7 @@ int Menu::enter()
         //hide the selection bar
         ifstream selectFile("KeySelect.txt");
         selected.setX(15);
-        selected.setY(6);
+        selected.setY(13);
         selected.setImage(selectFile, yellow, center);
 
         //hide the menu images
@@ -238,12 +254,25 @@ int Menu::enter()
         image.draw();
 
 		leftRImage.setImage(encryption.getSetting3(), white, center);
+		leftRImage.setX(129);
+		leftRImage.setY(15);
 		leftRImage.draw();
 		midRImage.setImage(encryption.getSetting2(), white, center);
+		midRImage.setX(139);
+		midRImage.setY(15);
 		midRImage.draw();
 		rightRImage.setImage(encryption.getSetting1(), white, center);
+		rightRImage.setX(149);
+		rightRImage.setY(15);
 		rightRImage.draw();
+
+		selectRotor.setX(129);
+		selectRotor.setY(15);
 		selectRotor.draw();
+
+		plugChars.setX(130);
+		plugChars.setY(26);
+		plugChars.draw();
     }
     //if we are on the Instructions option
     else if(myState == Enigma_string)
@@ -270,12 +299,25 @@ int Menu::enter()
         image.draw();
 
 		leftRImage.setImage(encryption.getSetting3(), white, center);
+		leftRImage.setX(129);
+		leftRImage.setY(8);
 		leftRImage.draw();
 		midRImage.setImage(encryption.getSetting2(), white, center);
+		midRImage.setX(139);
+		midRImage.setY(8);
 		midRImage.draw();
 		rightRImage.setImage(encryption.getSetting1(), white, center);
+		rightRImage.setX(149);
+		rightRImage.setY(8);
 		rightRImage.draw();
+
+		selectRotor.setX(129);
+		selectRotor.setY(8);
 		selectRotor.draw();
+
+		plugChars.setX(130);
+		plugChars.setY(19);
+		plugChars.draw();
 	}
     else if(myState == Enigma_string_back || myState == Enigma_string_plug_back)
     {
@@ -339,7 +381,9 @@ void Menu::escape()
         //move the selection bar
         ifstream selectFile("Selected.txt");
         selected.setImage(selectFile, white, center);
-        selected.move(SCREENWIDTH/2, SCREENHEIGHT/2-6);
+        selected.setX(SCREENWIDTH/2);
+		selected.setY(SCREENHEIGHT/2-6);
+		selected.draw();
 
 		encryption.setSetting3(encryption.getSetting3().c_str()[0]);
 		encryption.setSetting2(encryption.getSetting2().c_str()[0]);
@@ -376,7 +420,9 @@ void Menu::escape()
         //move the selection bar
         ifstream selectFile("Selected.txt");
         selected.setImage(selectFile, white, center);
-        selected.move(SCREENWIDTH/2, SCREENHEIGHT/2-3);
+        selected.setX(SCREENWIDTH/2);
+		selected.setY(SCREENHEIGHT/2-3);
+		selected.draw();
 
 		encryption.setSetting3(encryption.getSetting3().c_str()[0]);
 		encryption.setSetting2(encryption.getSetting2().c_str()[0]);
@@ -395,32 +441,32 @@ void Menu::keyPushed(char key)
         selected.setImage(selectFile, green, center);
 		selectFile.close();
 		switch(key) {
-		case 'Q': case 'q': selected.setX(15); selected.setY(6); break;
-        case 'W': case 'w': selected.setX(25); selected.setY(6); break;
-        case 'E': case 'e': selected.setX(35); selected.setY(6); break;
-        case 'R': case 'r': selected.setX(45); selected.setY(6); break;
-        case 'T': case 't': selected.setX(55); selected.setY(6); break;
-        case 'Y': case 'y': selected.setX(65); selected.setY(6); break;
-        case 'U': case 'u': selected.setX(75); selected.setY(6); break;
-        case 'I': case 'i': selected.setX(85); selected.setY(6); break;
-        case 'O': case 'o': selected.setX(95); selected.setY(6); break;
-        case 'P': case 'p': selected.setX(105); selected.setY(6); break;
-        case 'A': case 'a': selected.setX(19); selected.setY(14); break;
-        case 'S': case 's': selected.setX(29); selected.setY(14); break;
-        case 'D': case 'd': selected.setX(39); selected.setY(14); break;
-        case 'F': case 'f': selected.setX(49); selected.setY(14); break;
-        case 'G': case 'g': selected.setX(59); selected.setY(14); break;
-        case 'H': case 'h': selected.setX(69); selected.setY(14); break;
-        case 'J': case 'j': selected.setX(79); selected.setY(14); break;
-        case 'K': case 'k': selected.setX(89); selected.setY(14); break;
-        case 'L': case 'l': selected.setX(99); selected.setY(14); break;
-        case 'Z': case 'z': selected.setX(23); selected.setY(22); break;
-        case 'X': case 'x': selected.setX(33); selected.setY(22); break;
-        case 'C': case 'c': selected.setX(43); selected.setY(22); break;
-        case 'V': case 'v': selected.setX(53); selected.setY(22); break;
-        case 'B': case 'b': selected.setX(63); selected.setY(22); break;
-        case 'N': case 'n': selected.setX(73); selected.setY(22); break;
-        case 'M': case 'm': selected.setX(83); selected.setY(22); break;
+		case 'Q': case 'q': selected.setX(15); selected.setY(13); break;
+        case 'W': case 'w': selected.setX(25); selected.setY(13); break;
+        case 'E': case 'e': selected.setX(35); selected.setY(13); break;
+        case 'R': case 'r': selected.setX(45); selected.setY(13); break;
+        case 'T': case 't': selected.setX(55); selected.setY(13); break;
+        case 'Y': case 'y': selected.setX(65); selected.setY(13); break;
+        case 'U': case 'u': selected.setX(75); selected.setY(13); break;
+        case 'I': case 'i': selected.setX(85); selected.setY(13); break;
+        case 'O': case 'o': selected.setX(95); selected.setY(13); break;
+        case 'P': case 'p': selected.setX(105); selected.setY(13); break;
+        case 'A': case 'a': selected.setX(19); selected.setY(21); break;
+        case 'S': case 's': selected.setX(29); selected.setY(21); break;
+        case 'D': case 'd': selected.setX(39); selected.setY(21); break;
+        case 'F': case 'f': selected.setX(49); selected.setY(21); break;
+        case 'G': case 'g': selected.setX(59); selected.setY(21); break;
+        case 'H': case 'h': selected.setX(69); selected.setY(21); break;
+        case 'J': case 'j': selected.setX(79); selected.setY(21); break;
+        case 'K': case 'k': selected.setX(89); selected.setY(21); break;
+        case 'L': case 'l': selected.setX(99); selected.setY(21); break;
+        case 'Z': case 'z': selected.setX(23); selected.setY(29); break;
+        case 'X': case 'x': selected.setX(33); selected.setY(29); break;
+        case 'C': case 'c': selected.setX(43); selected.setY(29); break;
+        case 'V': case 'v': selected.setX(53); selected.setY(29); break;
+        case 'B': case 'b': selected.setX(63); selected.setY(29); break;
+        case 'N': case 'n': selected.setX(73); selected.setY(29); break;
+        case 'M': case 'm': selected.setX(83); selected.setY(29); break;
 		}
 		selected.draw();
 		char new_key = encryption.encryptString(string(1, key))[0];
@@ -431,32 +477,32 @@ void Menu::keyPushed(char key)
 		rightRImage.setImage(encryption.getSetting1(), white, center);
 		rightRImage.draw();
 		switch(new_key) {
-		case 'Q': case 'q': second_selected.setX(15); second_selected.setY(6); break;
-        case 'W': case 'w': second_selected.setX(25); second_selected.setY(6); break;
-        case 'E': case 'e': second_selected.setX(35); second_selected.setY(6); break;
-        case 'R': case 'r': second_selected.setX(45); second_selected.setY(6); break;
-        case 'T': case 't': second_selected.setX(55); second_selected.setY(6); break;
-        case 'Y': case 'y': second_selected.setX(65); second_selected.setY(6); break;
-        case 'U': case 'u': second_selected.setX(75); second_selected.setY(6); break;
-        case 'I': case 'i': second_selected.setX(85); second_selected.setY(6); break;
-        case 'O': case 'o': second_selected.setX(95); second_selected.setY(6); break;
-        case 'P': case 'p': second_selected.setX(105); second_selected.setY(6); break;
-        case 'A': case 'a': second_selected.setX(19); second_selected.setY(14); break;
-        case 'S': case 's': second_selected.setX(29); second_selected.setY(14); break;
-        case 'D': case 'd': second_selected.setX(39); second_selected.setY(14); break;
-        case 'F': case 'f': second_selected.setX(49); second_selected.setY(14); break;
-        case 'G': case 'g': second_selected.setX(59); second_selected.setY(14); break;
-        case 'H': case 'h': second_selected.setX(69); second_selected.setY(14); break;
-        case 'J': case 'j': second_selected.setX(79); second_selected.setY(14); break;
-        case 'K': case 'k': second_selected.setX(89); second_selected.setY(14); break;
-        case 'L': case 'l': second_selected.setX(99); second_selected.setY(14); break;
-        case 'Z': case 'z': second_selected.setX(23); second_selected.setY(22); break;
-        case 'X': case 'x': second_selected.setX(33); second_selected.setY(22); break;
-        case 'C': case 'c': second_selected.setX(43); second_selected.setY(22); break;
-        case 'V': case 'v': second_selected.setX(53); second_selected.setY(22); break;
-        case 'B': case 'b': second_selected.setX(63); second_selected.setY(22); break;
-        case 'N': case 'n': second_selected.setX(73); second_selected.setY(22); break;
-        case 'M': case 'm': second_selected.setX(83); second_selected.setY(22); break;
+		case 'Q': case 'q': second_selected.setX(15); second_selected.setY(13); break;
+        case 'W': case 'w': second_selected.setX(25); second_selected.setY(13); break;
+        case 'E': case 'e': second_selected.setX(35); second_selected.setY(13); break;
+        case 'R': case 'r': second_selected.setX(45); second_selected.setY(13); break;
+        case 'T': case 't': second_selected.setX(55); second_selected.setY(13); break;
+        case 'Y': case 'y': second_selected.setX(65); second_selected.setY(13); break;
+        case 'U': case 'u': second_selected.setX(75); second_selected.setY(13); break;
+        case 'I': case 'i': second_selected.setX(85); second_selected.setY(13); break;
+        case 'O': case 'o': second_selected.setX(95); second_selected.setY(13); break;
+        case 'P': case 'p': second_selected.setX(105); second_selected.setY(13); break;
+        case 'A': case 'a': second_selected.setX(19); second_selected.setY(21); break;
+        case 'S': case 's': second_selected.setX(29); second_selected.setY(21); break;
+        case 'D': case 'd': second_selected.setX(39); second_selected.setY(21); break;
+        case 'F': case 'f': second_selected.setX(49); second_selected.setY(21); break;
+        case 'G': case 'g': second_selected.setX(59); second_selected.setY(21); break;
+        case 'H': case 'h': second_selected.setX(69); second_selected.setY(21); break;
+        case 'J': case 'j': second_selected.setX(79); second_selected.setY(21); break;
+        case 'K': case 'k': second_selected.setX(89); second_selected.setY(21); break;
+        case 'L': case 'l': second_selected.setX(99); second_selected.setY(21); break;
+        case 'Z': case 'z': second_selected.setX(23); second_selected.setY(29); break;
+        case 'X': case 'x': second_selected.setX(33); second_selected.setY(29); break;
+        case 'C': case 'c': second_selected.setX(43); second_selected.setY(29); break;
+        case 'V': case 'v': second_selected.setX(53); second_selected.setY(29); break;
+        case 'B': case 'b': second_selected.setX(63); second_selected.setY(29); break;
+        case 'N': case 'n': second_selected.setX(73); second_selected.setY(29); break;
+        case 'M': case 'm': second_selected.setX(83); second_selected.setY(29); break;
 		}
 		second_selected.draw();
 	}
@@ -465,16 +511,16 @@ void Menu::keyPushed(char key)
 		if(firstPlugChar.length() == secondPlugChar.length()) {
 			if (firstPlugChar.length() < 10) {
 				firstPlugChar += key;
-				string temp = "";
+				plugString = "";
 				for(int i=0; i<secondPlugChar.length(); i++) {
-					temp += firstPlugChar[i];
-					temp += " - ";
-					temp += secondPlugChar[i];
-					temp += "\n";
+					plugString += firstPlugChar[i];
+					plugString += " - ";
+					plugString += secondPlugChar[i];
+					plugString += "\n";
 				}
-				temp += firstPlugChar[firstPlugChar.length()-1];
-				temp += " : ";
-				plugChars.setImage(temp, white);
+				plugString += firstPlugChar[firstPlugChar.length()-1];
+				plugString += " : ";
+				plugChars.setImage(plugString, white);
 				plugChars.draw();
 			}
 		} else {
@@ -500,14 +546,14 @@ void Menu::keyPushed(char key)
 					}
 				}
 				secondPlugChar += key;
-				string temp = "";
+				plugString = "";
 				for(int i=0; i<secondPlugChar.length(); i++) {
-					temp += firstPlugChar[i];
-					temp += " - ";
-					temp += secondPlugChar[i];
-					temp += "\n";
+					plugString += firstPlugChar[i];
+					plugString += " - ";
+					plugString += secondPlugChar[i];
+					plugString += "\n";
 				}
-				plugChars.setImage(temp, white);
+				plugChars.setImage(plugString, white);
 				plugChars.draw();
 			}
 		}
@@ -560,16 +606,16 @@ void Menu::keyPushed(char key)
 		if(firstPlugChar.length() == secondPlugChar.length()) {
 			if (firstPlugChar.length() < 10) {
 				firstPlugChar += key;
-				string temp = "";
+				plugString = "";
 				for(int i=0; i<secondPlugChar.length(); i++) {
-					temp += firstPlugChar[i];
-					temp += " - ";
-					temp += secondPlugChar[i];
-					temp += "\n";
+					plugString += firstPlugChar[i];
+					plugString += " - ";
+					plugString += secondPlugChar[i];
+					plugString += "\n";
 				}
-				temp += firstPlugChar[firstPlugChar.length()-1];
-				temp += " : ";
-				plugChars.setImage(temp, white);
+				plugString += firstPlugChar[firstPlugChar.length()-1];
+				plugString += " : ";
+				plugChars.setImage(plugString, white);
 				plugChars.draw();
 			}
 		} else {
@@ -594,14 +640,14 @@ void Menu::keyPushed(char key)
 					}
 				}
 				secondPlugChar += key;
-				string temp = "";
+				plugString  = "";
 				for(int i=0; i<secondPlugChar.length(); i++) {
-					temp += firstPlugChar[i];
-					temp += " - ";
-					temp += secondPlugChar[i];
-					temp += "\n";
+					plugString += firstPlugChar[i];
+					plugString += " - ";
+					plugString += secondPlugChar[i];
+					plugString += "\n";
 				}
-				plugChars.setImage(temp, white);
+				plugChars.setImage(plugString, white);
 				plugChars.draw();
 			}
 		}
