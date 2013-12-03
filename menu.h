@@ -35,23 +35,23 @@ class Menu
         Sprite image;
         //the selection bar image
         Sprite selected;
-		//the secondary selection bar image
-		Sprite second_selected;
-		//word to encrypt
-		string word;
-		Sprite wordImage;
-		//encrypted word
-		Sprite encryptWordImage;
+	//the secondary selection bar image
+	Sprite second_selected;
+	//word to encrypt
+	string word;
+	Sprite wordImage;
+	//encrypted word
+	Sprite encryptWordImage;
 
-		Sprite leftRImage;
-		Sprite midRImage;
-		Sprite rightRImage;
+	Sprite leftRImage;
+	Sprite midRImage;
+	Sprite rightRImage;
 
-		int currSelectRotor;
-		Sprite selectRotor;
+	int currSelectRotor;
+	Sprite selectRotor;
 
-		string firstPlugChar, secondPlugChar;
-		Sprite plugChars;
+	string firstPlugChar, secondPlugChar, plugString;
+	Sprite plugChars;
 
     public:
         Menu();
