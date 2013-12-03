@@ -1,3 +1,11 @@
+/*
+	Authors: Jonathan McElroy
+	FileName: sprite.h
+	Description: The sprite class that
+	partitions the areas of the plotter screen for
+	better graphics and easier image plotting
+*/
+
 #ifndef OBJECT_H_INCLUDED
 #define OBJECT_H_INCLUDED
 
