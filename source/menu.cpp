@@ -693,6 +693,8 @@ void Menu::keyPushed(char key) {
         wordImage.setImage(word, cyan, midLeft);
         wordImage.draw();
     }
+    
+    
     else if (myState == Enigma_string_plug_back) {
         asmToLower(&key);
         if(firstPlugChar.length() == secondPlugChar.length()) {
@@ -746,20 +748,27 @@ void Menu::keyPushed(char key) {
     }
 }
 
+/*
+    Name: space
+    Description: 
+    
+*/
+
 void Menu::space() {
     States myState = options[myStateNum];
+   
     if (myState == Enigma_char_back) {
         second_selected.unDraw();
         selected.unDraw();
-        //wordImage.unDraw();
-
+        
         ifstream selectFile("SpaceSelect.txt");
-        selected.setImage(selectFile, green, center);
+        selected.setImage(selectFile, green, center); 
         selected.setX(54);
         selected.setY(37);
         selected.draw();
         selectFile.close();
-
+        
+        
         word += ' ';
         wordImage.setImage(word, cyan, midLeft);
         wordImage.draw();
@@ -791,11 +800,11 @@ void Menu::moveUp() {
                 if (encryption.getSetting3() == "Z")
                     encryption.setSetting3('A');
                 else
-                    encryption.setSetting3(encryption.getSetting3().c_str()[0]+1);
+                encryption.setSetting3(encryption.getSetting3().c_str()[0]+1);
                 leftRImage.setImage(encryption.getSetting3(), white, center);
                 leftRImage.draw();
-                break;
-            }
+                break;          // this takes the user's rotor setting3 and passes it to the encryption object
+            }// the encryption object takes the setting and applies it to the 3rd rotor
         case 1:
             {
                 if (encryption.getSetting2() == "Z")
@@ -804,8 +813,8 @@ void Menu::moveUp() {
                     encryption.setSetting2(encryption.getSetting2().c_str()[0]+1);
                 midRImage.setImage(encryption.getSetting2(), white, center);
                 midRImage.draw();
-                break;
-            }
+                break;// this takes the user's rotor setting2 and passes it to the encryption object
+            }// the encryption object takes the setting and applies it to the 2ndrotor
         case 2:
             {
                 if (encryption.getSetting1() == "Z")
@@ -814,8 +823,8 @@ void Menu::moveUp() {
                     encryption.setSetting1(encryption.getSetting1().c_str()[0]+1);
                 rightRImage.setImage(encryption.getSetting1(), white, center);
                 rightRImage.draw();
-                break;
-            }
+                break;// this takes the user's rotor setting1 and passes it to the encryption object
+            }// the encryption object takes the setting and applies it to the 1st rotor
         }
     }
     //if we are in the menu and not at the top
@@ -827,7 +836,7 @@ void Menu::moveUp() {
     }
 }
 
-//called if left is pressed
+//called if left is pressed; moves the selection cursor to the left
 void Menu::moveLeft() {
     States myState = options[myStateNum];
     if(myState == Enigma_char_back || myState == Enigma_string_back || myState == Enigma_char_plug_back || myState == Enigma_string_plug_back) {
@@ -838,7 +847,7 @@ void Menu::moveLeft() {
     }
 }
 
-//called if right is pressed
+//called if right is pressed; moves the selection cursor to the right
 void Menu::moveRight() {
     States myState = options[myStateNum];
     if(myState == Enigma_char_back || myState == Enigma_string_back || myState == Enigma_char_plug_back || myState == Enigma_string_plug_back) {
@@ -849,7 +858,7 @@ void Menu::moveRight() {
     }
 }
 
-//called if down is pressed
+//called if down is pressed; moves the selection cursor down
 void Menu::moveDown() {
     States myState = options[myStateNum];
     if(myState == Enigma_char_back || myState == Enigma_string_back || myState == Enigma_char_plug_back || myState == Enigma_string_plug_back) {
