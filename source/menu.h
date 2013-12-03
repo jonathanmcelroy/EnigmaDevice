@@ -1,3 +1,8 @@
+/*
+	Authors: Jonathan McElroy, Aaron Salinas, Elise Brown
+	FileName: menu.h
+	Description: the header file for the menu screen
+*/
 #ifndef MENU_H_INCLUDED
 #define MENU_H_INCLUDED
 

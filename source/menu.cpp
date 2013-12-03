@@ -1,7 +1,7 @@
 /******************************************************************************
 Author:         Jonathan McElroy
 Filename:       menu.cpp
-Description:    Impliments the menu system and starts the game
+Description:    Implements the menu system and starts the game
 Date Modified:  December 2, 2013
 ******************************************************************************/
 #include <iostream>
