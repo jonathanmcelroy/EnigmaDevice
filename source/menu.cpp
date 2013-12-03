@@ -228,7 +228,6 @@ void Menu::tab() {
 
         // erase the selection sprite and secondary selection sprite
         selected.unDraw();
-        second_selected.unDraw();
 
         // draw the plugboard selection sprite
         ifstream selectFile("PlugSelect.txt");
@@ -246,7 +245,6 @@ void Menu::tab() {
 
         // erase the selection sprite and secondary selection sprite
         selected.unDraw();
-        second_selected.unDraw();
         // if the plugboard has an half entered setting, remove it
         if(firstPlugChar.length() != secondPlugChar.length()) {
             plugChars.unDraw();
