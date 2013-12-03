@@ -1,3 +1,8 @@
+/*
+	Authors: Jonathan McElroy, Aaron Salinas, Elise Brown
+	FileName:
+	Description:
+*/
 #ifndef CONSTANTS_H_INCLUDED
 #define CONSTANTS_H_INCLUDED
 
