@@ -18,8 +18,7 @@ Default Constructor
 
 Defines all the values when the application starts
 */
-Menu::Menu()
-{
+Menu::Menu() {
 
     //the menu options at the beginning of the game
     options[0] = Enigma_char;
@@ -96,8 +95,7 @@ string is encrypted, the rotors do not need to be changed.
 If the application is in either of the plugboard editing modes, then the last
 entered setting will be removed.
 */
-void Menu::backspace()
-{
+void Menu::backspace() {
     // get the current state
     States myState = options[myStateNum];
     // if we are in the Enigma string mode
@@ -280,8 +278,7 @@ at. If the mode pointed to is "Exit", exit the program
 If the application is in enigma string mode, encrypt the current encryption
 string and display the result.
 */
-int Menu::enter()
-{
+int Menu::enter() {
     bool exiting = false;
     // get the current mode
     States myState = options[myStateNum];
@@ -414,8 +411,7 @@ Called when the escape key is pressed
 
 If the application is in enigma mode, return to the main menu
 */
-void Menu::escape()
-{
+void Menu::escape() {
     // get the current setting
     States myState = options[myStateNum];
     // if we are in enigma char mode
@@ -460,6 +456,7 @@ void Menu::escape()
         encryption.setSetting3(encryption.getSetting3().c_str()[0]);
         encryption.setSetting2(encryption.getSetting2().c_str()[0]);
         encryption.setSetting1(encryption.getSetting1().c_str()[0]);
+        currSelectRotor = 0;
     }
     // if we are in enigma string mode
     if(myState == Enigma_string_back || myState == Enigma_string_plug_back) {
@@ -502,6 +499,7 @@ void Menu::escape()
         encryption.setSetting3(encryption.getSetting3().c_str()[0]);
         encryption.setSetting2(encryption.getSetting2().c_str()[0]);
         encryption.setSetting1(encryption.getSetting1().c_str()[0]);
+        currSelectRotor = 0;
     }
 }
 
@@ -517,8 +515,7 @@ string.
 If the application is in enigma string plugboard mode, add the setting to that
 key. If the key is already taken, remove the old setting and start a new one.
 */
-void Menu::keyPushed(char key)
-{
+void Menu::keyPushed(char key) {
     States myState = options[myStateNum];
     if (myState == Enigma_char_back) {
         // erase the selection bar and the secondary selection bar
@@ -772,8 +769,7 @@ void Menu::space() {
 }
 
 //called if up is pressed
-void Menu::moveUp()
-{
+void Menu::moveUp() {
     States myState = options[myStateNum];
     if(myState == Enigma_char_back || myState == Enigma_string_back || myState == Enigma_char_plug_back || myState == Enigma_string_plug_back) {
         switch(currSelectRotor) {
@@ -819,8 +815,7 @@ void Menu::moveUp()
 }
 
 //called if left is pressed
-void Menu::moveLeft()
-{
+void Menu::moveLeft() {
     States myState = options[myStateNum];
     if(myState == Enigma_char_back || myState == Enigma_string_back || myState == Enigma_char_plug_back || myState == Enigma_string_plug_back) {
         currSelectRotor = (currSelectRotor+2)%3;
@@ -831,8 +826,7 @@ void Menu::moveLeft()
 }
 
 //called if right is pressed
-void Menu::moveRight()
-{
+void Menu::moveRight() {
     States myState = options[myStateNum];
     if(myState == Enigma_char_back || myState == Enigma_string_back || myState == Enigma_char_plug_back || myState == Enigma_string_plug_back) {
         currSelectRotor = (currSelectRotor+1)%3;
@@ -843,8 +837,7 @@ void Menu::moveRight()
 }
 
 //called if down is pressed
-void Menu::moveDown()
-{
+void Menu::moveDown() {
     States myState = options[myStateNum];
     if(myState == Enigma_char_back || myState == Enigma_string_back || myState == Enigma_char_plug_back || myState == Enigma_string_plug_back) {
         switch(currSelectRotor) {
