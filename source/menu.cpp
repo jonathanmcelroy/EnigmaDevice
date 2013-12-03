@@ -14,12 +14,14 @@ using namespace std;
 #include "menu.h"
 
 /*
-Constructor
+Default Constructor
+
+Defines all the values when the application starts
 */
 Menu::Menu()
 {
 
-    //the options at the beginning of the game
+    //the menu options at the beginning of the game
     options[0] = Enigma_char;
     options[1] = Enigma_string;
     options[2] = Exit;
@@ -43,312 +45,381 @@ Menu::Menu()
     selected.setImage(selectedFile, white, center);
     selected.draw();
 
-	//sets the second selection bar
-	ifstream selected2File("KeySelect.txt");
-	second_selected.setX(15);
-	second_selected.setY(6);
-	second_selected.setImage(selected2File, red, center);
+    //sets the secondary selection bar
+    ifstream selected2File("KeySelect.txt");
+    second_selected.setX(15);
+    second_selected.setY(6);
+    second_selected.setImage(selected2File, red, center);
 
-	// the word we are encrypting
-	word = "";
-	wordImage.setImage(word, cyan, midLeft);
-	wordImage.setX(2);
-	wordImage.setY(SCREENHEIGHT/2 + 13);
+    // the word we are encrypting
+    word = "";
+    wordImage.setImage(word, cyan, midLeft);
+    wordImage.setX(2);
+    wordImage.setY(SCREENHEIGHT/2 + 13);
 
-	// the word we have encrypted
-	encryptWordImage.setImage("", red, midLeft);
-	encryptWordImage.setX(2);
-	encryptWordImage.setY(SCREENHEIGHT/2 + 19	 );
+    // the word we have encrypted
+    encryptWordImage.setImage("", red, midLeft);
+    encryptWordImage.setX(2);
+    encryptWordImage.setY(SCREENHEIGHT/2 + 19    );
 
-	// the rotors
-	leftRImage.setImage(encryption.getSetting3(), white, center);
-	leftRImage.setX(129);
-	leftRImage.setY(8);
-	midRImage.setImage(encryption.getSetting2(), white, center);
-	midRImage.setX(139);
-	midRImage.setY(8);
-	rightRImage.setImage(encryption.getSetting1(), white, center);
-	rightRImage.setX(149);
-	rightRImage.setY(8);
+    // the rotors
+    leftRImage.setImage(encryption.getSetting3(), white, center);
+    leftRImage.setX(129);
+    leftRImage.setY(8);
+    midRImage.setImage(encryption.getSetting2(), white, center);
+    midRImage.setX(139);
+    midRImage.setY(8);
+    rightRImage.setImage(encryption.getSetting1(), white, center);
+    rightRImage.setX(149);
+    rightRImage.setY(8);
 
-	// the rotor selected
-	ifstream selectedRotor("SelectRotor.txt");
-	selectRotor.setX(129);
-	selectRotor.setY(8);
-	selectRotor.setImage(selectedRotor, yellow, center);
+    // the rotor selected
+    currSelectRotor = 0;
+    ifstream selectedRotor("SelectRotor.txt");
+    selectRotor.setX(129);
+    selectRotor.setY(8);
+    selectRotor.setImage(selectedRotor, yellow, center);
 
-	currSelectRotor = 0;
-
-	firstPlugChar = secondPlugChar = plugString = "";
-	plugChars.setX(130);
-	plugChars.setY(19);
-	plugChars.setImage(plugString, white);
+    // the plugboard settings
+    firstPlugChar = secondPlugChar = plugString = "";
+    plugChars.setX(130);
+    plugChars.setY(19);
+    plugChars.setImage(plugString, white);
 }
 
+/*
+Called when the backspace key is pressed
+
+If the application is in enigma string mode, then the last character entered to
+the encryption string is removed. Because the rotors are not rotated until the
+string is encrypted, the rotors do not need to be changed.
+If the application is in either of the plugboard editing modes, then the last
+entered setting will be removed.
+*/
 void Menu::backspace()
 {
-	States myState = options[myStateNum];
-	if (myState == Enigma_string_back)
-	{
-		selected.unDraw();
-		encryptWordImage.unDraw();
-
-		if (word.length() > 0) {
-			wordImage.unDraw();
-			word.resize(word.length()-1);
-			wordImage.setImage(word, cyan, midLeft);
-			wordImage.draw();
-		}
-	}
-	if (myState == Enigma_char_plug_back || myState == Enigma_string_plug_back) {
-		if(firstPlugChar.length() == secondPlugChar.length()) {
-			if (firstPlugChar.length()) {
-				plugChars.unDraw();
-				encryption.unsetPlugboard(firstPlugChar[firstPlugChar.length()-1], secondPlugChar[secondPlugChar.length()-1]);
-				firstPlugChar.resize(firstPlugChar.length()-1);
-				secondPlugChar.resize(secondPlugChar.length()-1);
-				plugString = "";
-				for(int i=0; i<secondPlugChar.length(); i++) {
-					plugString += firstPlugChar[i];
-					plugString += " - ";
-					plugString += secondPlugChar[i];
-					plugString += "\n";
-				}
-				plugChars.setImage(plugString, white);
-				plugChars.draw();
-			}
-		} else {
-			plugChars.unDraw();
-			firstPlugChar.resize(firstPlugChar.length()-1);
-			plugString = "";
-			for(int i=0; i<secondPlugChar.length(); i++) {
-				plugString += firstPlugChar[i];
-				plugString += " - ";
-				plugString += secondPlugChar[i];
-				plugString += "\n";
-			}
-			plugChars.setImage(plugString, white);
-			plugChars.draw();
-		}
-	}
-}
-
-void Menu::tab() {
-	States myState = options[myStateNum];
-	if(myState == Enigma_char_back) {
-		options[0] = Enigma_char_back;
-		options[1] = Enigma_char_plug_back;
-        numOfOptions = 1;
-        myStateNum = 1;
-
-		selected.unDraw();
-		second_selected.unDraw();
-
-		ifstream selectFile("PlugSelect.txt");
-		selected.setImage(selectFile, green, center);
-		selected.setX(134);
-		selected.setY(31);
-		selected.draw();
-	}
-	else if(myState == Enigma_char_plug_back) {
-		options[0] = Enigma_char_back;
-		options[1] = Enigma_char_plug_back;
-        numOfOptions = 1;
-        myStateNum = 0;
-
-		selected.unDraw();
-		second_selected.unDraw();
-		if(firstPlugChar.length() != secondPlugChar.length()) {
-			plugChars.unDraw();
-			firstPlugChar.resize(firstPlugChar.length()-1);
-			plugString = "";
-			for(int i=0; i<secondPlugChar.length(); i++) {
-				plugString += firstPlugChar[i];
-				plugString += " - ";
-				plugString += secondPlugChar[i];
-				plugString += "\n";
-			}
-			plugChars.setImage(plugString, white);
-			plugChars.draw();
-		}
-
-		ifstream selectFile("KeySelect.txt");
-        selected.setX(15);
-        selected.setY(13);
-        selected.setImage(selectFile, yellow, center);
-
-	}
-	else if(myState == Enigma_string_back) {
-		options[0] = Enigma_string_back;
-		options[1] = Enigma_string_plug_back;
-        numOfOptions = 1;
-        myStateNum = 1;
-
-		selected.unDraw();
-		second_selected.unDraw();
-
-		ifstream selectFile("PlugSelect.txt");
-		selected.setImage(selectFile, green, center);
-		selected.setX(134);
-		selected.setY(24);
-		selected.draw();
-	}
-	else if(myState == Enigma_string_plug_back) {
-		options[0] = Enigma_string_back;
-		options[1] = Enigma_string_plug_back;
-        numOfOptions = 1;
-        myStateNum = 0;
-
-		selected.unDraw();
-		second_selected.unDraw();
-		if(firstPlugChar.length() != secondPlugChar.length()) {
-			plugChars.unDraw();
-			firstPlugChar.resize(firstPlugChar.length()-1);
-			plugString = "";
-			for(int i=0; i<secondPlugChar.length(); i++) {
-				plugString += firstPlugChar[i];
-				plugString += " - ";
-				plugString += secondPlugChar[i];
-				plugString += "\n";
-			}
-			plugChars.setImage(plugString, white);
-			plugChars.draw();
-		}
-
-		ifstream selectFile("KeySelect.txt");
-        selected.setX(15);
-        selected.setY(6);
-        selected.setImage(selectFile, yellow, center);
-	}
-}
-
-//called if enter is pressed
-//if we exit, return true
-int Menu::enter()
-{
-    bool exiting = false;
+    // get the current state
     States myState = options[myStateNum];
-    //if we are on the char option
-    if(myState == Enigma_char)
+    // if we are in the Enigma string mode
+    if (myState == Enigma_string_back)
     {
-        //make the only option to return to the menu
+        // Erase the sprites of the selection bar around the key and the
+        // encrypted word.
+        selected.unDraw();
+        encryptWordImage.unDraw();
+
+        // if the word has characters in it, remove the last character.
+        if (word.length() > 0) {
+            wordImage.unDraw();
+            word.resize(word.length()-1);
+            wordImage.setImage(word, cyan, midLeft);
+            wordImage.draw();
+        }
+    }
+    // if we are in the in a plugboard editing mode
+    if (myState == Enigma_char_plug_back || myState == Enigma_string_plug_back) {
+        // if we only have whole entered settings, remove the last one
+        if(firstPlugChar.length() == secondPlugChar.length()) {
+            // if there are at least one setting, remove the last
+            if (firstPlugChar.length()) {
+                // Erase the plugboard setting sprite
+                plugChars.unDraw();
+                // unset the plugboard setting
+                encryption.unsetPlugboard(
+                        firstPlugChar[firstPlugChar.length()-1],
+                        secondPlugChar[secondPlugChar.length()-1]);
+                // remove the last setting
+                firstPlugChar.resize(firstPlugChar.length()-1);
+                secondPlugChar.resize(secondPlugChar.length()-1);
+                plugString = "";
+                for(int i=0; i<secondPlugChar.length(); i++) {
+                    plugString += firstPlugChar[i];
+                    plugString += " - ";
+                    plugString += secondPlugChar[i];
+                    plugString += "\n";
+                }
+                plugChars.setImage(plugString, white);
+                plugChars.draw();
+            }
+        }
+        // if we have a half entered setting, remove that
+        else {
+            // Erase the plugboard setting sprite
+            plugChars.unDraw();
+            // remove the half setting
+            firstPlugChar.resize(firstPlugChar.length()-1);
+            plugString = "";
+            for(int i=0; i<secondPlugChar.length(); i++) {
+                plugString += firstPlugChar[i];
+                plugString += " - ";
+                plugString += secondPlugChar[i];
+                plugString += "\n";
+            }
+            plugChars.setImage(plugString, white);
+            plugChars.draw();
+        }
+    }
+}
+
+/*
+Called when the tab key is pressed
+
+If the application is in either Enigma char mode and Enigma string mode, switch
+between key editing mode and plugboard editing mode.
+*/
+void Menu::tab() {
+    // get the current mode
+    States myState = options[myStateNum];
+    // if we are in enigma char mode, adding keys
+    if(myState == Enigma_char_back) {
+        // set the current settings
         options[0] = Enigma_char_back;
-		options[1] = Enigma_char_plug_back;
+        options[1] = Enigma_char_plug_back;
+        numOfOptions = 1;
+        myStateNum = 1;
+
+        // erase the selection sprite and secondary selection sprite
+        selected.unDraw();
+        second_selected.unDraw();
+
+        // draw the plugboard selection sprite
+        ifstream selectFile("PlugSelect.txt");
+        selected.setImage(selectFile, green, center);
+        selected.setX(134);
+        selected.setY(31);
+        selected.draw();
+    }
+    else if(myState == Enigma_char_plug_back) {
+        // set the current settings
+        options[0] = Enigma_char_back;
+        options[1] = Enigma_char_plug_back;
         numOfOptions = 1;
         myStateNum = 0;
 
-		selected.unDraw();
-		image.unDraw();
+        // erase the selection sprite and secondary selection sprite
+        selected.unDraw();
+        second_selected.unDraw();
+        // if the plugboard has an half entered setting, remove it
+        if(firstPlugChar.length() != secondPlugChar.length()) {
+            plugChars.unDraw();
+            firstPlugChar.resize(firstPlugChar.length()-1);
+            plugString = "";
+            for(int i=0; i<secondPlugChar.length(); i++) {
+                plugString += firstPlugChar[i];
+                plugString += " - ";
+                plugString += secondPlugChar[i];
+                plugString += "\n";
+            }
+            plugChars.setImage(plugString, white);
+            plugChars.draw();
+        }
 
-        //hide the selection bar
+        // set the key selection sprite
         ifstream selectFile("KeySelect.txt");
         selected.setX(15);
         selected.setY(13);
         selected.setImage(selectFile, yellow, center);
 
-        //hide the menu images
+    }
+    else if(myState == Enigma_string_back) {
+        // set the current settings
+        options[0] = Enigma_string_back;
+        options[1] = Enigma_string_plug_back;
+        numOfOptions = 1;
+        myStateNum = 1;
+
+        // erase the selection sprite and secondary selection sprite
+        selected.unDraw();
+        second_selected.unDraw();
+
+        // draw the plugboard selection sprite
+        ifstream selectFile("PlugSelect.txt");
+        selected.setImage(selectFile, green, center);
+        selected.setX(134);
+        selected.setY(24);
+        selected.draw();
+    }
+    else if(myState == Enigma_string_plug_back) {
+        // set the current settings
+        options[0] = Enigma_string_back;
+        options[1] = Enigma_string_plug_back;
+        numOfOptions = 1;
+        myStateNum = 0;
+
+        // erase the selection sprite and secondary selection sprite
+        selected.unDraw();
+        second_selected.unDraw();
+        // if the plugboard has an half entered setting, remove it
+        if(firstPlugChar.length() != secondPlugChar.length()) {
+            plugChars.unDraw();
+            firstPlugChar.resize(firstPlugChar.length()-1);
+            plugString = "";
+            for(int i=0; i<secondPlugChar.length(); i++) {
+                plugString += firstPlugChar[i];
+                plugString += " - ";
+                plugString += secondPlugChar[i];
+                plugString += "\n";
+            }
+            plugChars.setImage(plugString, white);
+            plugChars.draw();
+        }
+
+        // set the key selection sprite
+        ifstream selectFile("KeySelect.txt");
+        selected.setX(15);
+        selected.setY(6);
+        selected.setImage(selectFile, yellow, center);
+    }
+}
+
+/*
+Called when the enter key is pressed
+
+If the application is in menu mode, enter the mode the selection bar is pointing
+at. If the mode pointed to is "Exit", exit the program
+If the application is in enigma string mode, encrypt the current encryption
+string and display the result.
+*/
+int Menu::enter()
+{
+    bool exiting = false;
+    // get the current mode
+    States myState = options[myStateNum];
+    // if we are on the char option
+    if(myState == Enigma_char) {
+        // set the current settings
+        options[0] = Enigma_char_back;
+        options[1] = Enigma_char_plug_back;
+        numOfOptions = 1;
+        myStateNum = 0;
+
+        // erase the selection bar and the background image
+        selected.unDraw();
+        image.unDraw();
+
+        // move the selection bar
+        ifstream selectFile("KeySelect.txt");
+        selected.setX(15);
+        selected.setY(13);
+        selected.setImage(selectFile, yellow, center);
+
+        // change and draw the background image
         ifstream stringFile("ClassicBoard.txt");
         image.setX(0);
         image.setY(0);
         image.setImage(stringFile, white);
         image.draw();
 
-		leftRImage.setImage(encryption.getSetting3(), white, center);
-		leftRImage.setX(129);
-		leftRImage.setY(15);
-		leftRImage.draw();
-		midRImage.setImage(encryption.getSetting2(), white, center);
-		midRImage.setX(139);
-		midRImage.setY(15);
-		midRImage.draw();
-		rightRImage.setImage(encryption.getSetting1(), white, center);
-		rightRImage.setX(149);
-		rightRImage.setY(15);
-		rightRImage.draw();
+        // move and draw the rotors
+        leftRImage.setImage(encryption.getSetting3(), white, center);
+        leftRImage.setX(129);
+        leftRImage.setY(15);
+        leftRImage.draw();
+        midRImage.setImage(encryption.getSetting2(), white, center);
+        midRImage.setX(139);
+        midRImage.setY(15);
+        midRImage.draw();
+        rightRImage.setImage(encryption.getSetting1(), white, center);
+        rightRImage.setX(149);
+        rightRImage.setY(15);
+        rightRImage.draw();
 
-		selectRotor.setX(129);
-		selectRotor.setY(15);
-		selectRotor.draw();
+        // move and draw the rotor selection
+        selectRotor.setX(129);
+        selectRotor.setY(15);
+        selectRotor.draw();
 
-		plugChars.setX(130);
-		plugChars.setY(26);
-		plugChars.draw();
+        // move and draw the plugboard settings
+        plugChars.setX(130);
+        plugChars.setY(26);
+        plugChars.draw();
     }
-    //if we are on the Instructions option
-    else if(myState == Enigma_string)
-    {
-		options[0] = Enigma_string_back;
-		options[1] = Enigma_string_plug_back;
+    // if we are on the string  option
+    else if(myState == Enigma_string) {
+        // set the current settings
+        options[0] = Enigma_string_back;
+        options[1] = Enigma_string_plug_back;
         numOfOptions = 1;
         myStateNum = 0;
 
-		selected.unDraw();
-		image.unDraw();
+        // erase the selection bar and the background image
+        selected.unDraw();
+        image.unDraw();
 
-		//hide the selection bar
-		ifstream selectFile("KeySelect.txt");
+        // move the selection bar
+        ifstream selectFile("KeySelect.txt");
         selected.setX(15);
         selected.setY(6);
         selected.setImage(selectFile, yellow, center);
 
-        //get and draw the instructions file
+        // change and draw the background image
         ifstream stringFile("StringBoard.txt");
         image.setX(0);
         image.setY(0);
         image.setImage(stringFile, white);
         image.draw();
 
-		leftRImage.setImage(encryption.getSetting3(), white, center);
-		leftRImage.setX(129);
-		leftRImage.setY(8);
-		leftRImage.draw();
-		midRImage.setImage(encryption.getSetting2(), white, center);
-		midRImage.setX(139);
-		midRImage.setY(8);
-		midRImage.draw();
-		rightRImage.setImage(encryption.getSetting1(), white, center);
-		rightRImage.setX(149);
-		rightRImage.setY(8);
-		rightRImage.draw();
+        // move and draw the rotors
+        leftRImage.setImage(encryption.getSetting3(), white, center);
+        leftRImage.setX(129);
+        leftRImage.setY(8);
+        leftRImage.draw();
+        midRImage.setImage(encryption.getSetting2(), white, center);
+        midRImage.setX(139);
+        midRImage.setY(8);
+        midRImage.draw();
+        rightRImage.setImage(encryption.getSetting1(), white, center);
+        rightRImage.setX(149);
+        rightRImage.setY(8);
+        rightRImage.draw();
 
-		selectRotor.setX(129);
-		selectRotor.setY(8);
-		selectRotor.draw();
+        // move and draw the rotor selection
+        selectRotor.setX(129);
+        selectRotor.setY(8);
+        selectRotor.draw();
 
-		plugChars.setX(130);
-		plugChars.setY(19);
-		plugChars.draw();
-	}
-    else if(myState == Enigma_string_back || myState == Enigma_string_plug_back)
-    {
-		encryption.setSetting3(encryption.getSetting3().c_str()[0]);
-		encryption.setSetting2(encryption.getSetting2().c_str()[0]);
-		encryption.setSetting1(encryption.getSetting1().c_str()[0]);
-		encryptWordImage.setImage(encryption.encryptString(word), red, midLeft);
-		encryptWordImage.draw();
-		leftRImage.setImage(encryption.getSetting3(), white, center);
-		leftRImage.draw();
-		midRImage.setImage(encryption.getSetting2(), white, center);
-		midRImage.draw();
-		rightRImage.setImage(encryption.getSetting1(), white, center);
-		rightRImage.draw();
+        // move and draw the plugboard settings
+        plugChars.setX(130);
+        plugChars.setY(19);
+        plugChars.draw();
     }
-    //if we are returning from viewing the credits
-    //if we are on the Exit option
-    else if(myState == Exit)
-    {
+    // if we are in the enigma string mode
+    else if(myState == Enigma_string_back || myState == Enigma_string_plug_back) {
+        // set the rotor settings to the encryption class
+        encryption.setSetting3(encryption.getSetting3().c_str()[0]);
+        encryption.setSetting2(encryption.getSetting2().c_str()[0]);
+        encryption.setSetting1(encryption.getSetting1().c_str()[0]);
+        // encrypt the string and set the image
+        encryptWordImage.setImage(encryption.encryptString(word), red, midLeft);
+        // draw the encrypted word
+        encryptWordImage.draw();
+        // update the rotors
+        leftRImage.setImage(encryption.getSetting3(), white, center);
+        leftRImage.draw();
+        midRImage.setImage(encryption.getSetting2(), white, center);
+        midRImage.draw();
+        rightRImage.setImage(encryption.getSetting1(), white, center);
+        rightRImage.draw();
+    }
+    // if we are on the Exit option
+    else if(myState == Exit) {
         //quit the game
         exiting = true;
     }
     return exiting;
 }
 
-//called if escape is pressed
+/*
+Called when the escape key is pressed
+
+If the application is in enigma mode, return to the main menu
+*/
 void Menu::escape()
 {
+    // get the current setting
     States myState = options[myStateNum];
-    if(myState == Enigma_char_back || myState == Enigma_char_plug_back)
-    {
+    // if we are in enigma char mode
+    if(myState == Enigma_char_back || myState == Enigma_char_plug_back) {
         //reset the main options, starting on enigma_char
         options[0] = Enigma_char;
         options[1] = Enigma_string;
@@ -356,21 +427,21 @@ void Menu::escape()
         numOfOptions = 3;
         myStateNum = 0;
 
-		selected.unDraw();
-		second_selected.unDraw();
-		image.unDraw();
-		//remove the strings and rotors
-		wordImage.unDraw();
-		encryptWordImage.unDraw();
-		leftRImage.unDraw();
-		midRImage.unDraw();
-		rightRImage.unDraw();
-		selectRotor.unDraw();
+        // erase all the spites
+        selected.unDraw();
+        second_selected.unDraw();
+        wordImage.unDraw();
+        encryptWordImage.unDraw();
+        leftRImage.unDraw();
+        midRImage.unDraw();
+        rightRImage.unDraw();
+        selectRotor.unDraw();
+        image.unDraw();
 
-		// reset the word to encrypt
-		word = "";
+        // reset the word to encrypt
+        word = "";
 
-        //get and draw the menu file
+        // get and draw the menu file
         ifstream imageFile("Menu.txt");
         ifstream imageColorFile("MenuColor.txt");
         image.setX(0);
@@ -378,19 +449,20 @@ void Menu::escape()
         image.setImage(imageFile, imageColorFile);
         image.draw();
 
-        //move the selection bar
+        // move and draw the selection bar
         ifstream selectFile("Selected.txt");
         selected.setImage(selectFile, white, center);
         selected.setX(SCREENWIDTH/2);
-		selected.setY(SCREENHEIGHT/2-6);
-		selected.draw();
+        selected.setY(SCREENHEIGHT/2-6);
+        selected.draw();
 
-		encryption.setSetting3(encryption.getSetting3().c_str()[0]);
-		encryption.setSetting2(encryption.getSetting2().c_str()[0]);
-		encryption.setSetting1(encryption.getSetting1().c_str()[0]);
+        // set the current rotor settings
+        encryption.setSetting3(encryption.getSetting3().c_str()[0]);
+        encryption.setSetting2(encryption.getSetting2().c_str()[0]);
+        encryption.setSetting1(encryption.getSetting1().c_str()[0]);
     }
-	if(myState == Enigma_string_back || myState == Enigma_string_plug_back)
-    {
+    // if we are in enigma string mode
+    if(myState == Enigma_string_back || myState == Enigma_string_plug_back) {
         //reset the main options, starting on play
         options[0] = Enigma_char;
         options[1] = Enigma_string;
@@ -398,18 +470,20 @@ void Menu::escape()
         numOfOptions = 3;
         myStateNum = 1;
 
-		selected.unDraw();
-		image.unDraw();
+        // erase all the spites
+        selected.unDraw();
+        image.unDraw();
+        wordImage.unDraw();
+        encryptWordImage.unDraw();
+        leftRImage.unDraw();
+        midRImage.unDraw();
+        rightRImage.unDraw();
+        selectRotor.unDraw();
 
-		word = "";
-		wordImage.unDraw();
-		encryptWordImage.unDraw();
-		leftRImage.unDraw();
-		midRImage.unDraw();
-		rightRImage.unDraw();
-		selectRotor.unDraw();
+        // reset the word to encrypt
+        word = "";
 
-        //get and draw the menu file
+        // get and draw the menu file
         ifstream imageFile("Menu.txt");
         ifstream imageColorFile("MenuColor.txt");
         image.setX(0);
@@ -417,31 +491,48 @@ void Menu::escape()
         image.setImage(imageFile, imageColorFile);
         image.draw();
 
-        //move the selection bar
+        // move and draw the selection bar
         ifstream selectFile("Selected.txt");
         selected.setImage(selectFile, white, center);
         selected.setX(SCREENWIDTH/2);
-		selected.setY(SCREENHEIGHT/2-3);
-		selected.draw();
+        selected.setY(SCREENHEIGHT/2-3);
+        selected.draw();
 
-		encryption.setSetting3(encryption.getSetting3().c_str()[0]);
-		encryption.setSetting2(encryption.getSetting2().c_str()[0]);
-		encryption.setSetting1(encryption.getSetting1().c_str()[0]);
+        // set the current rotor settings
+        encryption.setSetting3(encryption.getSetting3().c_str()[0]);
+        encryption.setSetting2(encryption.getSetting2().c_str()[0]);
+        encryption.setSetting1(encryption.getSetting1().c_str()[0]);
     }
 }
 
+/*
+Called when an alpha key is pressed
+
+If the application is in enigma char mode, encrypt the character and display the
+result, changing the rotor settings in the process.
+If the application is in enigma char plugboard mode, add the setting to that
+key. If the key is already taken, remove the old setting and start a new one.
+If the application is in enigma string mode, add the char to the encryption
+string.
+If the application is in enigma string plugboard mode, add the setting to that
+key. If the key is already taken, remove the old setting and start a new one.
+*/
 void Menu::keyPushed(char key)
 {
     States myState = options[myStateNum];
-	if (myState == Enigma_char_back) {
-		ifstream selectFile("KeySelect.txt");
+    if (myState == Enigma_char_back) {
+        // erase the selection bar and the secondary selection bar
         selected.unDraw();
-		second_selected.unDraw();
+        second_selected.unDraw();
 
+        // set the selection bar image
+        ifstream selectFile("KeySelect.txt");
         selected.setImage(selectFile, green, center);
-		selectFile.close();
-		switch(key) {
-		case 'Q': case 'q': selected.setX(15); selected.setY(13); break;
+        selectFile.close();
+
+        // move the selection bar depending on the key pressed
+        switch(key) {
+        case 'Q': case 'q': selected.setX(15); selected.setY(13); break;
         case 'W': case 'w': selected.setX(25); selected.setY(13); break;
         case 'E': case 'e': selected.setX(35); selected.setY(13); break;
         case 'R': case 'r': selected.setX(45); selected.setY(13); break;
@@ -467,17 +558,24 @@ void Menu::keyPushed(char key)
         case 'B': case 'b': selected.setX(63); selected.setY(29); break;
         case 'N': case 'n': selected.setX(73); selected.setY(29); break;
         case 'M': case 'm': selected.setX(83); selected.setY(29); break;
-		}
-		selected.draw();
-		char new_key = encryption.encryptString(string(1, key))[0];
-		leftRImage.setImage(encryption.getSetting3(), white, center);
-		leftRImage.draw();
-		midRImage.setImage(encryption.getSetting2(), white, center);
-		midRImage.draw();
-		rightRImage.setImage(encryption.getSetting1(), white, center);
-		rightRImage.draw();
-		switch(new_key) {
-		case 'Q': case 'q': second_selected.setX(15); second_selected.setY(13); break;
+        }
+        // draw the selection bar
+        selected.draw();
+
+        // encrypt the char
+        char new_key = encryption.encryptString(string(1, key))[0];
+
+        // set the updated rotor settings
+        leftRImage.setImage(encryption.getSetting3(), white, center);
+        leftRImage.draw();
+        midRImage.setImage(encryption.getSetting2(), white, center);
+        midRImage.draw();
+        rightRImage.setImage(encryption.getSetting1(), white, center);
+        rightRImage.draw();
+
+        // move the secondary selection bar depending on the encrypted char.
+        switch(new_key) {
+        case 'Q': case 'q': second_selected.setX(15); second_selected.setY(13); break;
         case 'W': case 'w': second_selected.setX(25); second_selected.setY(13); break;
         case 'E': case 'e': second_selected.setX(35); second_selected.setY(13); break;
         case 'R': case 'r': second_selected.setX(45); second_selected.setY(13); break;
@@ -503,69 +601,69 @@ void Menu::keyPushed(char key)
         case 'B': case 'b': second_selected.setX(63); second_selected.setY(29); break;
         case 'N': case 'n': second_selected.setX(73); second_selected.setY(29); break;
         case 'M': case 'm': second_selected.setX(83); second_selected.setY(29); break;
-		}
-		second_selected.draw();
-	}
-	else if (myState == Enigma_char_plug_back) {
-		asmToLower(&key);
-		if(firstPlugChar.length() == secondPlugChar.length()) {
-			if (firstPlugChar.length() < 10) {
-				firstPlugChar += key;
-				plugString = "";
-				for(int i=0; i<secondPlugChar.length(); i++) {
-					plugString += firstPlugChar[i];
-					plugString += " - ";
-					plugString += secondPlugChar[i];
-					plugString += "\n";
-				}
-				plugString += firstPlugChar[firstPlugChar.length()-1];
-				plugString += " : ";
-				plugChars.setImage(plugString, white);
-				plugChars.draw();
-			}
-		} else {
-			if (firstPlugChar[firstPlugChar.length()-1] != key) {
-				plugChars.unDraw();
+        }
+        // draw the secondary selection bar
+        second_selected.draw();
+    }
+    else if (myState == Enigma_char_plug_back) {
+        asmToLower(&key);
+        if(firstPlugChar.length() == secondPlugChar.length()) {
+            if (firstPlugChar.length() < 10) {
+                firstPlugChar += key;
+                plugString = "";
+                for(int i=0; i<secondPlugChar.length(); i++) {
+                    plugString += firstPlugChar[i];
+                    plugString += " - ";
+                    plugString += secondPlugChar[i];
+                    plugString += "\n";
+                }
+                plugString += firstPlugChar[firstPlugChar.length()-1];
+                plugString += " : ";
+                plugChars.setImage(plugString, white);
+                plugChars.draw();
+            }
+        } else {
+            if (firstPlugChar[firstPlugChar.length()-1] != key) {
+                plugChars.unDraw();
 
-				int changed = encryption.setPlugboard(firstPlugChar[firstPlugChar.length()-1], key);
-				char char2 = changed & 0xFF;
-				char char1 = (changed >> 8) & 0xFF;
-				
-				for(int i=0; i<secondPlugChar.length(); i++) {
-					if (firstPlugChar[i] == char1 || secondPlugChar[i] == char1) {
-						firstPlugChar.erase(i, 1);
-						secondPlugChar.erase(i, 1);
-						break;
-					}
-				}
-				for(int i=0; i<secondPlugChar.length(); i++) {
-					if (firstPlugChar[i] == char2 || secondPlugChar[i] == char2) {
-						firstPlugChar.erase(i, 1);
-						secondPlugChar.erase(i, 1);
-						break;
-					}
-				}
-				secondPlugChar += key;
-				plugString = "";
-				for(int i=0; i<secondPlugChar.length(); i++) {
-					plugString += firstPlugChar[i];
-					plugString += " - ";
-					plugString += secondPlugChar[i];
-					plugString += "\n";
-				}
-				plugChars.setImage(plugString, white);
-				plugChars.draw();
-			}
-		}
-	}
-    else if (myState == Enigma_string_back)
-    {
-		selected.unDraw();
-		encryptWordImage.unDraw();
+                int changed = encryption.setPlugboard(firstPlugChar[firstPlugChar.length()-1], key);
+                char char2 = changed & 0xFF;
+                char char1 = (changed >> 8) & 0xFF;
 
-		ifstream selectFile("KeySelect.txt");
+                for(int i=0; i<secondPlugChar.length(); i++) {
+                    if (firstPlugChar[i] == char1 || secondPlugChar[i] == char1) {
+                        firstPlugChar.erase(i, 1);
+                        secondPlugChar.erase(i, 1);
+                        break;
+                    }
+                }
+                for(int i=0; i<secondPlugChar.length(); i++) {
+                    if (firstPlugChar[i] == char2 || secondPlugChar[i] == char2) {
+                        firstPlugChar.erase(i, 1);
+                        secondPlugChar.erase(i, 1);
+                        break;
+                    }
+                }
+                secondPlugChar += key;
+                plugString = "";
+                for(int i=0; i<secondPlugChar.length(); i++) {
+                    plugString += firstPlugChar[i];
+                    plugString += " - ";
+                    plugString += secondPlugChar[i];
+                    plugString += "\n";
+                }
+                plugChars.setImage(plugString, white);
+                plugChars.draw();
+            }
+        }
+    }
+    else if (myState == Enigma_string_back) {
+        selected.unDraw();
+        encryptWordImage.unDraw();
+
+        ifstream selectFile("KeySelect.txt");
         selected.setImage(selectFile, green, center);
-		selectFile.close();
+        selectFile.close();
         switch(key) {
         case 'Q': case 'q': selected.setX(15); selected.setY(6); break;
         case 'W': case 'w': selected.setX(25); selected.setY(6); break;
@@ -594,126 +692,125 @@ void Menu::keyPushed(char key)
         case 'N': case 'n': selected.setX(73); selected.setY(22); break;
         case 'M': case 'm': selected.setX(83); selected.setY(22); break;
         }
-		selected.draw();
+        selected.draw();
 
-		word += key;
-		wordImage.setImage(word, cyan, midLeft);
-		wordImage.draw();
+        word += key;
+        wordImage.setImage(word, cyan, midLeft);
+        wordImage.draw();
     }
-	else if (myState == Enigma_string_plug_back)
-    {
-		asmToLower(&key);
-		if(firstPlugChar.length() == secondPlugChar.length()) {
-			if (firstPlugChar.length() < 10) {
-				firstPlugChar += key;
-				plugString = "";
-				for(int i=0; i<secondPlugChar.length(); i++) {
-					plugString += firstPlugChar[i];
-					plugString += " - ";
-					plugString += secondPlugChar[i];
-					plugString += "\n";
-				}
-				plugString += firstPlugChar[firstPlugChar.length()-1];
-				plugString += " : ";
-				plugChars.setImage(plugString, white);
-				plugChars.draw();
-			}
-		} else {
-			if (firstPlugChar[firstPlugChar.length()-1] != key) {
-				plugChars.unDraw();
-				int changed = encryption.setPlugboard(firstPlugChar[firstPlugChar.length()-1], key);
-				char char2 = changed & 0xFF;
-				char char1 = (changed >> 8) & 0xFF;
-				
-				for(int i=0; i<secondPlugChar.length(); i++) {
-					if (firstPlugChar[i] == char1 || secondPlugChar[i] == char1) {
-						firstPlugChar.erase(i, 1);
-						secondPlugChar.erase(i, 1);
-						break;
-					}
-				}
-				for(int i=0; i<secondPlugChar.length(); i++) {
-					if (firstPlugChar[i] == char2 || secondPlugChar[i] == char2) {
-						firstPlugChar.erase(i, 1);
-						secondPlugChar.erase(i, 1);
-						break;
-					}
-				}
-				secondPlugChar += key;
-				plugString  = "";
-				for(int i=0; i<secondPlugChar.length(); i++) {
-					plugString += firstPlugChar[i];
-					plugString += " - ";
-					plugString += secondPlugChar[i];
-					plugString += "\n";
-				}
-				plugChars.setImage(plugString, white);
-				plugChars.draw();
-			}
-		}
-	}
+    else if (myState == Enigma_string_plug_back) {
+        asmToLower(&key);
+        if(firstPlugChar.length() == secondPlugChar.length()) {
+            if (firstPlugChar.length() < 10) {
+                firstPlugChar += key;
+                plugString = "";
+                for(int i=0; i<secondPlugChar.length(); i++) {
+                    plugString += firstPlugChar[i];
+                    plugString += " - ";
+                    plugString += secondPlugChar[i];
+                    plugString += "\n";
+                }
+                plugString += firstPlugChar[firstPlugChar.length()-1];
+                plugString += " : ";
+                plugChars.setImage(plugString, white);
+                plugChars.draw();
+            }
+        } else {
+            if (firstPlugChar[firstPlugChar.length()-1] != key) {
+                plugChars.unDraw();
+                int changed = encryption.setPlugboard(firstPlugChar[firstPlugChar.length()-1], key);
+                char char2 = changed & 0xFF;
+                char char1 = (changed >> 8) & 0xFF;
+
+                for(int i=0; i<secondPlugChar.length(); i++) {
+                    if (firstPlugChar[i] == char1 || secondPlugChar[i] == char1) {
+                        firstPlugChar.erase(i, 1);
+                        secondPlugChar.erase(i, 1);
+                        break;
+                    }
+                }
+                for(int i=0; i<secondPlugChar.length(); i++) {
+                    if (firstPlugChar[i] == char2 || secondPlugChar[i] == char2) {
+                        firstPlugChar.erase(i, 1);
+                        secondPlugChar.erase(i, 1);
+                        break;
+                    }
+                }
+                secondPlugChar += key;
+                plugString  = "";
+                for(int i=0; i<secondPlugChar.length(); i++) {
+                    plugString += firstPlugChar[i];
+                    plugString += " - ";
+                    plugString += secondPlugChar[i];
+                    plugString += "\n";
+                }
+                plugChars.setImage(plugString, white);
+                plugChars.draw();
+            }
+        }
+    }
 }
 
 void Menu::space() {
-	States myState = options[myStateNum];
-	if (myState == Enigma_char_back || myState == Enigma_string_back) {
-		second_selected.unDraw();
-		selected.unDraw();
-		wordImage.unDraw();
+    States myState = options[myStateNum];
+    if (myState == Enigma_char_back || myState == Enigma_string_back) {
+        second_selected.unDraw();
+        selected.unDraw();
+        wordImage.unDraw();
 
-		ifstream selectFile("SpaceSelect.txt");
+        ifstream selectFile("SpaceSelect.txt");
         selected.setImage(selectFile, green, center);
-		selected.setX(54);
-		selected.setY(30);
-		selected.draw();
-		selectFile.close();
+        selected.setX(54);
+        selected.setY(30);
+        selected.draw();
+        selectFile.close();
 
-		word += ' ';
-		wordImage.setImage(word, cyan, midLeft);
-		wordImage.draw();
-	}
+        word += ' ';
+        wordImage.setImage(word, cyan, midLeft);
+        wordImage.draw();
+    }
 }
 
 //called if up is pressed
 void Menu::moveUp()
 {
     States myState = options[myStateNum];
-	if(myState == Enigma_char_back || myState == Enigma_string_back || myState == Enigma_char_plug_back || myState == Enigma_string_plug_back) {
-		switch(currSelectRotor) {
-		case 0:
-			{
-				if (encryption.getSetting3() == "Z")
-					encryption.setSetting3('A');
-				else
-					encryption.setSetting3(encryption.getSetting3().c_str()[0]+1);
-				leftRImage.setImage(encryption.getSetting3(), white, center);
-				leftRImage.draw();
-				break;
-			}
-		case 1:
-			{
-				if (encryption.getSetting2() == "Z")
-					encryption.setSetting2('A');
-				else
-					encryption.setSetting2(encryption.getSetting2().c_str()[0]+1);
-				midRImage.setImage(encryption.getSetting2(), white, center);
-				midRImage.draw();
-				break;
-			}
-		case 2:
-			{
-				if (encryption.getSetting1() == "Z")
-					encryption.setSetting1('A');
-				else
-					encryption.setSetting1(encryption.getSetting1().c_str()[0]+1);
-				rightRImage.setImage(encryption.getSetting1(), white, center);
-				rightRImage.draw();
-				break;
-			}
-		}
-	}
+    if(myState == Enigma_char_back || myState == Enigma_string_back || myState == Enigma_char_plug_back || myState == Enigma_string_plug_back) {
+        switch(currSelectRotor) {
+        case 0:
+            {
+                if (encryption.getSetting3() == "Z")
+                    encryption.setSetting3('A');
+                else
+                    encryption.setSetting3(encryption.getSetting3().c_str()[0]+1);
+                leftRImage.setImage(encryption.getSetting3(), white, center);
+                leftRImage.draw();
+                break;
+            }
+        case 1:
+            {
+                if (encryption.getSetting2() == "Z")
+                    encryption.setSetting2('A');
+                else
+                    encryption.setSetting2(encryption.getSetting2().c_str()[0]+1);
+                midRImage.setImage(encryption.getSetting2(), white, center);
+                midRImage.draw();
+                break;
+            }
+        case 2:
+            {
+                if (encryption.getSetting1() == "Z")
+                    encryption.setSetting1('A');
+                else
+                    encryption.setSetting1(encryption.getSetting1().c_str()[0]+1);
+                rightRImage.setImage(encryption.getSetting1(), white, center);
+                rightRImage.draw();
+                break;
+            }
+        }
+    }
     //if we are in the menu and not at the top
-	else if((myState == Enigma_char || myState == Enigma_string || myState == Exit) && myStateNum>0)
+    else if((myState == Enigma_char || myState == Enigma_string || myState == Exit) && myStateNum>0)
     {
         //move up
         myStateNum--;
@@ -726,11 +823,11 @@ void Menu::moveLeft()
 {
     States myState = options[myStateNum];
     if(myState == Enigma_char_back || myState == Enigma_string_back || myState == Enigma_char_plug_back || myState == Enigma_string_plug_back) {
-		currSelectRotor = (currSelectRotor+2)%3;
-		selectRotor.unDraw();
-		selectRotor.setX(129+currSelectRotor*10);
-		selectRotor.draw();
-	}
+        currSelectRotor = (currSelectRotor+2)%3;
+        selectRotor.unDraw();
+        selectRotor.setX(129+currSelectRotor*10);
+        selectRotor.draw();
+    }
 }
 
 //called if right is pressed
@@ -738,51 +835,51 @@ void Menu::moveRight()
 {
     States myState = options[myStateNum];
     if(myState == Enigma_char_back || myState == Enigma_string_back || myState == Enigma_char_plug_back || myState == Enigma_string_plug_back) {
-		currSelectRotor = (currSelectRotor+1)%3;
-		selectRotor.unDraw();
-		selectRotor.setX(129+currSelectRotor*10);
-		selectRotor.draw();
-	}
+        currSelectRotor = (currSelectRotor+1)%3;
+        selectRotor.unDraw();
+        selectRotor.setX(129+currSelectRotor*10);
+        selectRotor.draw();
+    }
 }
 
 //called if down is pressed
 void Menu::moveDown()
 {
     States myState = options[myStateNum];
-	if(myState == Enigma_char_back || myState == Enigma_string_back || myState == Enigma_char_plug_back || myState == Enigma_string_plug_back) {
-		switch(currSelectRotor) {
-		case 0:
-			{
-				if (encryption.getSetting3() == "A")
-					encryption.setSetting3('Z');
-				else
-					encryption.setSetting3(encryption.getSetting3().c_str()[0]-1);
-				leftRImage.setImage(encryption.getSetting3(), white, center);
-				leftRImage.draw();
-				break;
-			}
-		case 1:
-			{
-				if (encryption.getSetting2() == "A")
-					encryption.setSetting2('Z');
-				else
-					encryption.setSetting2(encryption.getSetting2().c_str()[0]-1);
-				midRImage.setImage(encryption.getSetting2(), white, center);
-				midRImage.draw();
-				break;
-			}
-		case 2:
-			{
-				if (encryption.getSetting1() == "A")
-					encryption.setSetting1('Z');
-				else
-					encryption.setSetting1(encryption.getSetting1().c_str()[0]-1);
-				rightRImage.setImage(encryption.getSetting1(), white, center);
-				rightRImage.draw();
-				break;
-			}
-		}
-	}
+    if(myState == Enigma_char_back || myState == Enigma_string_back || myState == Enigma_char_plug_back || myState == Enigma_string_plug_back) {
+        switch(currSelectRotor) {
+        case 0:
+            {
+                if (encryption.getSetting3() == "A")
+                    encryption.setSetting3('Z');
+                else
+                    encryption.setSetting3(encryption.getSetting3().c_str()[0]-1);
+                leftRImage.setImage(encryption.getSetting3(), white, center);
+                leftRImage.draw();
+                break;
+            }
+        case 1:
+            {
+                if (encryption.getSetting2() == "A")
+                    encryption.setSetting2('Z');
+                else
+                    encryption.setSetting2(encryption.getSetting2().c_str()[0]-1);
+                midRImage.setImage(encryption.getSetting2(), white, center);
+                midRImage.draw();
+                break;
+            }
+        case 2:
+            {
+                if (encryption.getSetting1() == "A")
+                    encryption.setSetting1('Z');
+                else
+                    encryption.setSetting1(encryption.getSetting1().c_str()[0]-1);
+                rightRImage.setImage(encryption.getSetting1(), white, center);
+                rightRImage.draw();
+                break;
+            }
+        }
+    }
     //if we are in the menu and not at the bottom
     else if((myState == Enigma_char || myState == Enigma_string || myState == Exit) && myStateNum<numOfOptions-1)
     {
