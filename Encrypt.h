@@ -1,3 +1,8 @@
+/*
+	Authors: Jonathan McElroy, Aaron Salinas, Elise Brown
+	FileName: encrypt.h
+	Description: the header file for the encrypt class
+*/
 #ifndef ADD_H_GUARD
 #define ADD_H_GUARD
 #include <string>
