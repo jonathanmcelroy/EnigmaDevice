@@ -1,3 +1,19 @@
+/*
+	Authors: Jonathan McElroy, Aaron Salinas, Elise Brown
+	FileName: Encrypt.cpp
+	Description: The source file that implements the
+	methods of the encrypt class from encrypt.h
+	
+	This File also has the implementation of our asmMain function which
+	is our assembly language encrypt and decrypt function that is
+	the main base for the Enigma encryption.  THe RotorUpdate function
+	is also included in this file.  Rotor update is an assembly function
+	that shifts the rotors according to the user's rotor settings. The asmToLower 
+	function converts the user's string to all lowercase letters before encryption
+	this eliminates the problem of having an uppercase letter encrypt to its 
+	lowercase counterpart.
+	
+*/
 #include "Encrypt.h"
 #include <string>
 #include <cstdlib>
