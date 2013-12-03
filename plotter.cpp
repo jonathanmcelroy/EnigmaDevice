@@ -1,4 +1,11 @@
-//this is needed to make the screen biggers
+/*
+	Authors: Jonathan McElroy, Aaron Salinas, Elise Brown
+	FileName: plotter.cpp
+	Description: this file includes the method implementations for
+	the plotter class from plotter.h.  The plotter was modified
+	to make the screen larger
+*/
+
 #define _WIN32_WINNT 0x0601
 #include <iostream>
 using namespace std;
