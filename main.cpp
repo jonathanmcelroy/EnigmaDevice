@@ -1,7 +1,9 @@
 /*
 	Authors: Jonathan McElroy, Aaron Salinas, Elise Brown
-	FileName:
-	Description:
+	FileName: main.cpp
+	Description: controls which keys light up on the Enigma
+	Keyboard, also gives instruction on what to do if special
+	keys are pressed (i.e. tab and backspace)
 */
 #include <iostream>
 #include <fstream>
