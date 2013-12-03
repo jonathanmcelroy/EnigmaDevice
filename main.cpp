@@ -1,3 +1,8 @@
+/*
+	Authors: Jonathan McElroy, Aaron Salinas, Elise Brown
+	FileName:
+	Description:
+*/
 #include <iostream>
 #include <fstream>
 
