@@ -748,8 +748,23 @@ void Menu::keyPushed(char key) {
 
 void Menu::space() {
     States myState = options[myStateNum];
-    if (myState == Enigma_char_back || myState == Enigma_string_back) {
+    if (myState == Enigma_char_back) {
         second_selected.unDraw();
+        selected.unDraw();
+        //wordImage.unDraw();
+
+        ifstream selectFile("SpaceSelect.txt");
+        selected.setImage(selectFile, green, center);
+        selected.setX(54);
+        selected.setY(37);
+        selected.draw();
+        selectFile.close();
+
+        word += ' ';
+        wordImage.setImage(word, cyan, midLeft);
+        wordImage.draw();
+    }
+    if (myState == Enigma_string_back) {
         selected.unDraw();
         wordImage.unDraw();
 
